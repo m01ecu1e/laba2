@@ -4,27 +4,26 @@
 #include <stdlib.h>
 #include <time.h>
 #include <locale.h>
+#include <string.h>
+#include <windows.h>
 
-
-
-void multiply()
+void multiply(int size)
 {
 	setlocale(LC_ALL, "RUS");
 
 	int i = 0, j = 0, r = 0;
 	int elem_c;
 
-	clock_t start, end;
+	//clock_t start, end;
 
 	srand(time(NULL));// инициализируем параметры генератора случайных чисел
 	int** a = 0;
 	int** b = 0;
 	int** c = 0;
-	int size;
-	printf("Введите размер матриц: ");
-	scanf("%d", &size);
+	//int size;
+	//printf("Введите размер матриц: ");
+	//scanf("%d", &size);
 
-	start = clock();
 
 	a = (int**)malloc(size * sizeof(int*));
 	for (i = 0; i < size; i++)
@@ -72,11 +71,6 @@ void multiply()
 			}
 		}
 	}
-
-	end = clock();
-	float time = end - start;
-	printf("Время выполнения работы программы=%.3f с\n", time / CLOCKS_PER_SEC);
-	system("pause");
 }
 
 void shell(int* items, int count)
@@ -129,10 +123,218 @@ int comp(const int* a, const int* b)
 	return *a - *b;
 }
 
-int main()
+
+
+int main(void)
 {
+	
+	int count = 0, size = 0;
+	clock_t start, end;
 	setlocale(LC_ALL, "RUS");
-	int variant;
+
+	FILE* file;										
+	char inputname[16], filename[16];
+	setlocale(LC_ALL, "Russian");
+	printf("Введите название нового файла:\n>");		// Создание файла
+	scanf("%s", inputname);
+	strcpy(filename, inputname);
+	file = fopen(filename, "w+");
+	printf("Файл создан.");
+	Sleep(999);
+	system("cls");
+
+	/*Умножение матриц*/
+	printf("Умножение матриц:\n");
+	printf("Введите размер матриц: ");
+	scanf("%d", &size);
+	start = clock();
+	multiply(size);
+	end = clock();
+	float time = end - start;
+	fprintf(file, "Умножение матриц: Время выполнения работы программы=%.4f с\n\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+	end = 0;
+	start = 0;
+
+	/*Сортировка Шелла=================================================================*/
+	printf("Сортировка Шелла:\n\n");
+	printf("Введите размер маcсива:\n");
+
+	scanf("%d", &count);
+	int* items = (int*)malloc(count * sizeof(items));
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = rand() % 100;
+	}
+	printf("1. Случайный набор данных:\n");
+	start = clock();
+	shell(items, count);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Размер массива %d\n\n", count);
+	fprintf(file, "Шелл, случайный набор данных: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = i;
+	}
+	printf("2. Исходные данные по возрастанию:\n");
+	start = clock();
+	shell(items, count);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Шелл, исх. данные по возр.: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = count - i;
+	}
+	printf("3. Исходные данные по убыванию:\n");
+	start = clock();
+	shell(items, count);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Шелл, исх. данные по убыванию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		if (i < count / 2) {
+			items[i] = i;
+		}
+		else {
+			items[i] = count - i;
+		}
+	}
+	printf("4. Исходные данные по возр. до середины массива, дальше - по убыванию\n");
+	start = clock();
+	shell(items, count);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Шелл, исх. данные возрастающе-убывающие.: Время выполнения =%.4f с\n\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+
+	/*Быстрая сортировка=================================================================*/
+	printf("Быстрая сортировка\n");
+	printf("Размер массива %d\n\n", count);
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = rand() % 100;
+	}
+	printf("1. Случайный набор данных\n");
+	start = clock();
+	qs(items, count / 2, count - 1);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Быстрая сортировка, исх. данные по убыванию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = i;
+	}
+	printf("2. Исходные данные по возрастанию:\n");
+	start = clock();
+	qs(items, count / 2, count - 1);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Быстрая сортировка, исх. данные по возрастанию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = count - i;
+	}
+	printf("3. Исходные данные по убыванию:\n");
+	start = clock();
+	qs(items, count / 2, count - 1);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Быстрая сортировка, исх. данные по убыванию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		if (i < count / 2) {
+			items[i] = i;
+		}
+		else {
+			items[i] = count - i;
+		}
+	}
+	printf("4. Исходные данные по возр. до середины массива, дальше - по убыванию\n");
+	start = clock();
+	shell(items, count);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Быстрая с., исх. данные возрастающе-убывающие.: Время выполнения =%.4f с\n\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	/*quicksort=================================================================*/
+
+	printf("Quicksort\n");
+	printf("Размер массива %d\n\n", count);
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = rand() % 100;
+	}
+	printf("1. Случайный набор данных\n");
+	start = clock();
+	qsort(items, count, sizeof(int), (int(*) (const void*, const void*))comp);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Qsort, случайный набор данных: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = i;
+	}
+	printf("2. Исходные данные по возрастанию:\n");
+	start = clock();
+	qsort(items, count, sizeof(int), (int(*) (const void*, const void*))comp);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Qsort, исх. данные по возрастанию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		items[i] = count - i;
+	}
+	printf("3. Исходные данные по убыванию:\n");
+	start = clock();
+	qsort(items, count, sizeof(int), (int(*) (const void*, const void*))comp);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Qsort, исх. данные по убыванию: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+
+	for (int i = 0; i < count; i++)
+	{
+		if (i < count / 2) {
+			items[i] = i;
+		}
+		else {
+			items[i] = count - i;
+		}
+	}
+	printf("4. Исходные данные по возр. до середины массива, дальше - по убыванию\n");
+	start = clock();
+	qsort(items, count, sizeof(int), (int(*) (const void*, const void*))comp);
+	end = clock();
+	time = end - start;
+	fprintf(file, "Qsort, исх. данные возрастающе-убывающие.: Время выполнения =%.4f с\n", time / CLOCKS_PER_SEC);
+	printf("Время выполнения =%.4f с, результат записан в файл.\n\n", time / CLOCKS_PER_SEC);
+	fclose(file);
+
+	/*int variant;
 	system("cls");  // очищаем экран
 	printf("Главное меню\n\n");
 	printf("Введите номер действия:\n");
@@ -151,7 +353,7 @@ int main()
 			system("cls");
 			multiply();
 		}
-			break;
+		break;
 		case 2:
 		{
 			system("cls");
@@ -177,19 +379,19 @@ int main()
 				{
 					items[i] = i;
 				}
-			break;
+				break;
 			case 2:
 				for (int i = 0; i < count; i++)
 				{
 					items[i] = count - i;
 				}
-			break;
+				break;
 			case 3:
 				for (int i = 0; i < count; i++)
 				{
 					items[i] = rand() % 100;
 				}
-			break;
+				break;
 			case 4:
 				for (int i = 0; i < count; i++)
 				{
@@ -200,14 +402,14 @@ int main()
 						items[i] = count - i;
 					}
 				}
-			break;
+				break;
 			}
 
 			start = clock();
 			shell(items, count);
 			end = clock();
 			float time = end - start;
-			printf("Время выполнения работы программы=%.10f с\n", time / CLOCKS_PER_SEC);
+			printf("Время выполнения работы программы=%.4f с\n", time / CLOCKS_PER_SEC);
 
 		}
 		break;
@@ -260,10 +462,10 @@ int main()
 					}
 				}
 				start = clock();
-				qs(items, count/2, count - 1);
+				qs(items, count / 2, count - 1);
 				end = clock();
 				float time = end - start;
-				printf("Время выполнения работы программы=%.10f с\n", time / CLOCKS_PER_SEC);
+				printf("Время выполнения работы программы=%.4f с\n", time / CLOCKS_PER_SEC);
 				exit(0);
 			}
 
@@ -271,7 +473,7 @@ int main()
 			qs(items, 0, count - 1);
 			end = clock();
 			float time = end - start;
-			printf("Время выполнения работы программы=%.10f с\n", time / CLOCKS_PER_SEC);
+			printf("Время выполнения работы программы=%.4f с\n", time / CLOCKS_PER_SEC);
 
 		}
 		break;
@@ -282,7 +484,7 @@ int main()
 			clock_t start, end;
 			int count;
 			int data;
-			printf("Сортировка Шелла\n\n");
+			printf("Сортировка qsort\n\n");
 			printf("Введите размерность массива: ");
 			scanf("%d", &count);
 			int* items = (int*)malloc(count * sizeof(items));
@@ -327,19 +529,19 @@ int main()
 				break;
 			}
 
-			/*for (int i = 0; i < count; i++)
+			for (int i = 0; i < count; i++)
 			{
 				printf("(%d) ", items[i]);
-			}*/
+			}
 			start = clock();
 			qsort(items, count, sizeof(int), (int(*) (const void*, const void*))comp);
 			end = clock();
 			float time = end - start;
-			printf("Время выполнения работы программы=%.10f с\n", time / CLOCKS_PER_SEC);
-			/*for (int i = 0; i < count; i++)
+			printf("Время выполнения работы программы=%.4f с\n", time / CLOCKS_PER_SEC);
+			for (int i = 0; i < count; i++)
 			{
 				printf("(%d) ", items[i]);
-			}*/
+			}
 		}
 		break;
 		case 5:
@@ -350,5 +552,5 @@ int main()
 		}
 		if (variant != 5)
 			system("pause"); // задерживаем выполнение, чтобы пользователь мог увидеть результат выполнения выбранного пункта
-	} while (variant != 5);
+	} while (variant != 5);*/
 }
